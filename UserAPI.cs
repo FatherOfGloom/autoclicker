@@ -62,6 +62,7 @@ namespace Autoclicker
                     {
                         KeyPressed?.Invoke(this, EventArgs.Empty);
                     }
+                    Thread.Sleep(100);
                 }
             });
         }

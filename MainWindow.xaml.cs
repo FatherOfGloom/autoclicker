@@ -40,6 +40,11 @@ namespace Autoclicker
             _timer.Tick += OnTimerTick;
             _timer.Interval = TimeSpan.FromMilliseconds(Int32.Parse(_intervalValueText.Text));
             Deactivated += MainWindow_Deactivated;
+            _userAPI.KeyPressed += OnStopCombinationPressed;
+        }
+        private void OnStopCombinationPressed(object? sender, EventArgs e)
+        {
+            ToggleAutoClick();
         }
         private void MainWindow_Deactivated(object? sender, EventArgs e)
         {
@@ -68,24 +73,12 @@ namespace Autoclicker
                 OnPropertyChanged();
             }
         }
-        private bool ToggleAutoClick()
+        private void ToggleAutoClick()
         {
             _isAutoClickOn = !_isAutoClickOn;
             Output = "Autoclick mode is " + (_isAutoClickOn ? "on." : "off.");
-            return _isAutoClickOn;
-        }
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            Output = "Program started successfully.";
-            Output = "Autoclick mode is currently " + (_isAutoClickOn ? "on." : "off.");
-        }
-        private void TextBoxInterval_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
-        }
-        private void SubmitButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ToggleAutoClick())
+         
+            if (_isAutoClickOn)
             {
                 var interval = Int32.Parse(_intervalValueText.Text);
                 Output = $"Interval is set to {interval}.";
@@ -102,7 +95,20 @@ namespace Autoclicker
                 _timer.Stop();
             }
         }
-        private void OnTimerTick(object sender, EventArgs e)
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            Output = "Program started successfully.";
+            Output = "Autoclick mode is currently " + (_isAutoClickOn ? "on." : "off.");
+        }
+        private void TextBoxInterval_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = Regex.IsMatch(e.Text, "[^0-9]+");
+        }
+        private void SubmitButton_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleAutoClick();
+        }
+        private void OnTimerTick(object? sender, EventArgs e)
         {
             var timeSpan = _stopwatch.Elapsed;
             Time = String.Format("{0:00}:{1:00}:{2:00}", timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds);
